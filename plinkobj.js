@@ -1,6 +1,8 @@
-function Launcher(x,y,c,sc,r,g,w,ctx){
+function Launcher(x,y,sm,sp,c,sc,r,g,w,ctx){
 	this.x = x;
 	this.y = y;
+	this.smoothness = sm;
+	this.launcherspeed = sp;
 	this.color = c;
 	this.simcolor = sc;
 	this.radius = r;
@@ -8,10 +10,25 @@ function Launcher(x,y,c,sc,r,g,w,ctx){
 	this.gravity = g;
 	this.wind = w;
 
+	this.xvel = 0;
+	this.yvel = 0;
 	this.speed = 0;
 	this.angle = 0;
 
 	this.context = ctx;
+
+	this.control = function(up,down,left,right){
+		this.yvel *= this.smoothness;
+		this.xvel *= this.smoothness;
+
+		if(up) this.yvel -= this.launcherspeed*(1 - this.smoothness);
+		if(down) this.yvel += this.launcherspeed*(1 - this.smoothness);
+		if(left) this.xvel -= this.launcherspeed*(1 - this.smoothness);
+		if(right) this.xvel += this.launcherspeed*(1 - this.smoothness);
+
+		this.x += this.xvel;
+		this.y += this.yvel;
+	}
 
 	this.show = function(){
 		var endx, endy;
@@ -62,6 +79,11 @@ function Launcher(x,y,c,sc,r,g,w,ctx){
 		this.context.setLineDash([10,15]);
 		this.context.lineWidth = 1;
 		this.context.stroke();
+	}
+
+	this.aimto = function(p){
+		this.angle = Math.atan2((p.y - this.y),(p.x - this.x));
+		this.speed = distance(p.x, p.y, this.x, this.y)/10;
 	}
 }
 

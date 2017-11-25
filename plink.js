@@ -16,7 +16,10 @@ var balls = null;
 
 var launchercolor = "rgb(0,0,0)";
 var launchersimcolor = "rgba(255,0,0,.75)";
-var launcher = new Launcher(c.width/2, c.height/2, launchercolor, launchersimcolor, radius, gravity, wind, ctx);
+var launchersmoothness = .8;
+var launcherspeed = 2;
+var launcher = new Launcher(c.width/2, c.height/2, launchersmoothness, launcherspeed, 
+						    launchercolor, launchersimcolor, radius, gravity, wind, ctx);
 var simlength = 500;
 
 var radmax = 100;
@@ -28,10 +31,24 @@ var fade = .95;
 var posts = new Post(Math.random()*c.width, Math.random()*c.height, Math.random()*(radmax - radmin) + radmin,
 					 damping, opacity, grow, fade, null, ctx);
 
+var KEY_UP = 87,
+	KEY_DOWN = 83,
+	KEY_LEFT = 65,
+	KEY_RIGHT = 68;
+
+var up = false,
+	down = false,
+	left = false,
+	right = false;
+
+var mouse = new point(0,0);
+
 
 setInterval(function(){
 	ctx.clearRect(0,0,c.width,c.height);
 
+	launcher.control(up, down, left, right);
+	launcher.aimto(mouse);
 	launcher.simulate(posts, simlength);
 
 	var currball = balls;
@@ -93,9 +110,23 @@ document.body.onresize = function(){
 	}
 };
 
+document.body.onkeydown = function(e){
+	up = up | e.keyCode == KEY_UP;
+	down = down | e.keyCode == KEY_DOWN;
+	left = left | e.keyCode == KEY_LEFT;
+	right = right | e.keyCode == KEY_RIGHT;
+};
+
+document.body.onkeyup = function(e){
+	up = up && e.keyCode != KEY_UP;
+	down = down && e.keyCode != KEY_DOWN;
+	left = left && e.keyCode != KEY_LEFT;
+	right = right && e.keyCode != KEY_RIGHT;
+}
+
 c.onmousemove = function(e){
-	launcher.angle = Math.atan2((e.clientY - launcher.y),(e.clientX - launcher.x));
-	launcher.speed = distance(e.clientX, e.clientY, launcher.x, launcher.y)/10;
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
 };
 
 c.onmousedown = function(e){
