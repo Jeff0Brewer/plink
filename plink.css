@@ -1,0 +1,16 @@
+body{
+	overflow: hidden;
+}	
+
+.c{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	margin: 0;
+	padding: 0;
+	z-index: 0;
+}
+
+.test{
+	margin: 0;
+}
